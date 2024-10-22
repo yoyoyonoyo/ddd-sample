@@ -1,0 +1,63 @@
+@startuml 参加者
+
+actor "参加者" as Participant
+actor "管理者" as Admin
+
+left to right direction
+
+rectangle 課題 as Task {
+    usecase "取得" as UC1
+    usecase "変更" as UC2
+
+    Participant -- UC1
+    Participant -- UC2
+}
+
+
+rectangle サブスク as Subscription {
+    usecase "休会" as UC3
+    usecase "退会" as UC4
+    usecase "復帰" as UC5
+
+    Participant -- UC3
+    Participant -- UC4
+    Participant -- UC5
+}
+
+rectangle チーム as Team {
+    usecase "参加" as UC6
+    usecase "脱退" as UC7
+
+    UC6 -- Admin
+    UC7 -- Admin
+}
+
+Participant -- Team
+brew search postgresql
+note right of UC1: 参加者は自分の課題のみ閲覧できる
+note right of UC2: 参加者は自分の課題のみステータスを変更できる
+
+
+@enduml
+
+
+' @startuml 管理者
+
+' actor 参加者 as Participant
+' actor 管理者 as Admin
+
+' usecase 自分の課題を取得する
+' usecase 自分の課題のステータスを変更する
+' usecase 休会・退会する
+
+
+' left to right direction
+' rectangle {
+'     参加者 -- (課題を取得する)
+'     参加者 -- (テストを進める)
+'     (キューブをあげる) -- 社員
+' }
+
+' @enduml
+
+' https://tech.contracts.co.jp/entry/2020/10/16/150605

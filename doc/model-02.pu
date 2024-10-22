@@ -1,0 +1,138 @@
+' https://little-hands.hatenablog.com/entry/2019/05/11/genba-ddd-handson
+@startuml プラハチャレンジ進捗管理システム
+
+skinparam packageStyle rectangle
+
+' 1. エンティティの定義
+package チーム集約 {
+    class "チーム(Team)" as Team << (R,red) RootEntity >> {
+        Id: TeamId
+        Name: チーム名
+    }
+
+    class "参加者(Participant)" as Participant << (E, green) Entity >>  {
+        Id: ParticipantId
+        Name: 名前
+        MailAddress: メールアドレス
+        Status: 在関ステータス
+    }
+}
+
+package 課題集約 {
+    class "課題(Task)" as Task  << (R,red) RootEntity >> {
+        Id: TaskId
+        Status: ステータス
+    }
+}
+
+' 3. ルールの追加
+note bottom of Participant
+    - 名前とメールアドレスを持つ
+    - メールアドレスの重複は許されない
+    - ステータスが「在籍中」ではない場合、どのチームにも所属してはいけない
+end note
+
+note bottom of Team
+    - チームには名前がある
+    - チームの人数は2〜4名
+    - 人数が変動したときの挙動については参加者の増減に関する仕様を参照
+    - チームの名前はa, b, c, dのような英文字でなければいけない
+    - チームの名前は重複不可
+end note
+
+note bottom of Task
+    - 全ての参加者は複数の課題（80個ぐらい）を所有（割り当てられて）いる
+    - 参加者ごとに進捗ステータスがある
+    - 進捗ステータスは「未着手、取組中、レビュー待ち、完了」いずれかの値を持つ
+    - 進捗ステータス変更可否の条件は以下の通り
+        - 「未着手」は、「取組中」にのみ変更できる
+        - 「取組中」は「レビュー待ち」にのみ変更できる
+        - 「レビュー待ち」は、「取組中」もしくは「完了」に変更できる
+        - 「完了」は変更できない
+    - 進捗ステータスを変更できるのは、課題の所有者だけ
+end note
+
+' 4. 関連性の定義
+Participant "1..n" -right-> "1" Team
+Task "1..80" -right-> "0..n" Participant
+
+@enduml
+
+
+@startuml db
+
+' 参加者
+entity "Participant" {
+  * id : integer <<PK>>
+  --
+  + name : string <<NOT NULL>>
+  + mailAddress : string <<UNIQUE, NOT NULL>>
+  + participant_status_id : integer <<FK>>
+}
+
+' 参加者の状態
+entity "Participant_Status" {
+  * id : integer <<PK>>
+  --
+  + name : string <<UNIQUE, NOT NULL>>
+}
+
+' チーム
+entity "Team" {
+  * id : integer <<PK>>
+  --
+  + name : string <<NOT NULL>>
+}
+
+' チームの参加者
+' あえて中間テーブルで設定
+' https://zenn.dev/praha/articles/65afb28caacd0b
+entity "TeamMember" {
+  * participant_id : integer <<FK>>
+  * team_id : integer <<FK>>
+}
+
+' 課題の状況
+entity "Task" {
+  * participant_id : integer <<FK>>
+  * task_content_id : integer <<FK>>
+  * task_status_id : integer <<FK>>
+}
+
+' 課題
+entity "Task_Content" {
+  * id : integer <<PK>>
+  --
+  + title : string
+  + content : text
+}
+
+
+' 課題のステータス
+entity "Task_Status" {
+  * id : integer <<PK>>
+  --
+  + name : string <<UNIQUE, NOT NULL>>
+}
+
+' 1つの参加者は1つの参加者の状態を持つ
+Participant ||--|| Participant_Status
+' 1つの参加者は0以上の複数のチームを持つ
+' あえて中間テーブルで設定
+' https://zenn.dev/praha/articles/65afb28caacd0b
+Participant ||--o| TeamMember
+
+' 1つのチームは1以上の複数の参加者を持つ
+Team ||--|{ TeamMember
+
+' 1つの参加者は0以上の複数の課題を持つ
+Participant ||--o{ Task
+
+' 1つのタスクは1つのコンテンツを持つ
+Task ||--|| Task_Content
+
+' 1つの課題は1つの課題のステータスを持つ
+Task ||--|| Task_Status
+
+
+@enduml

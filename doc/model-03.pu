@@ -1,0 +1,134 @@
+' https://zenn.dev/yamachan0625/books/ddd-hands-on/viewer/chapter6_model
+@startuml PrahsChallenge
+
+skinparam packageStyle rectangle
+
+package "参加者集約" {
+    ' 1. エンティティの定義
+    class "Participant(参加者)" as Participant  << (R,red) RootEntity >> {
+        ParticipantId: ParticipantId
+        ParticipantName: 名前
+        ParticipantMailAddress: メールアドレス
+        ParticipantStatus: 在関ステータス
+        ParticipantTeamId: 所属チームID
+    }
+
+    ' 2. 属性の定義
+    class "ParticipantId" as ParticipantId {
+        + value: string
+    }
+
+    class "ParticipantName" as ParticipantName {
+        + value: string
+    }
+
+    class "ParticipantMailAddress" as ParticipantMailAddress {
+        + value: string
+    }
+
+    class "ParticipantStatus" as ParticipantStatus {
+        + value: Enum { 在籍中 , 休会中 , 退会済 }
+    }
+
+    class "ParticipantTeamId" as ParticipantTeamId {
+        + value: Enum { 在籍中 , 休会中 , 退会済 }
+    }
+
+
+    ' 3. ルールの追加
+    note bottom of Participant
+        名前とメールアドレスを持つ
+    end note
+
+    note bottom of ParticipantMailAddress
+        メールアドレスの重複は許されない
+    end note
+
+    note bottom of ParticipantStatus
+        ステータスが「在籍中」ではない場合、どのチームにも所属してはいけない
+    end note
+
+    Participant *-down- ParticipantId
+    Participant *-down- ParticipantName
+    Participant *-down- ParticipantMailAddress
+    Participant *-down- ParticipantStatus
+    Participant *-down- ParticipantTeamId
+}
+
+package "チーム集約" {
+    ' 1. エンティティの定義
+    class "Team(チーム)" as Team  << (R,red) RootEntity >> {
+        TeamId: TeamId
+        TeamName: チーム名
+    }
+
+    ' 2. 属性の定義
+    class "TeamId" as TeamId {
+        + value: string
+    }
+
+    class "TeamName" as TeamName {
+        + value: string
+    }
+
+    ' 3. ルールの追加
+    note bottom of Team
+        - チームには名前がある
+        - チームの人数は2〜4名
+        - 人数が変動したときの挙動については参加者の増減に関する仕様を参照
+    end note
+
+    note bottom of TeamName
+        - チームの名前はa, b, c, dのような英文字でなければいけない
+        - チームの名前は重複不可
+    end note
+
+    ' 4. 関連性の定義
+    Team *-down- TeamId
+    Team *-down- TeamName
+}
+
+package "タスク集約" {
+    ' 1. エンティティの定義
+    class "Task(課題)" as Task  << (R,red) RootEntity >> {
+        TaskId: TaskId
+        TaskStatus: ステータス
+    }
+
+    ' 2. 属性の定義
+    class "TaskId" as TaskId {
+        + value: string
+    }
+
+    class "TaskStatus" as TaskStatus {
+        + value: stringz
+    }
+
+    ' 3. ルールの追加
+    note bottom of Task
+        - 全ての参加者は複数の課題（80個ぐらい）を所有（割り当てられて）いる
+        - 参加者ごとに進捗ステータスがある
+    end note
+
+
+    note bottom of TaskStatus
+        - 進捗ステータスは「未着手、取組中、レビュー待ち、完了」いずれかの値を持つ
+        - 進捗ステータス変更可否の条件は以下の通り
+            - 「未着手」は、「取組中」にのみ変更できる
+            - 「取組中」は「レビュー待ち」にのみ変更できる
+            - 「レビュー待ち」は、「取組中」もしくは「完了」に変更できる
+            - 「完了」は変更できない
+        - 進捗ステータスを変更できるのは、課題の所有者だけ
+    end note
+
+    ' 4. 関連性の定義
+    Task *-down- TaskId
+    Task *-down- TaskName
+    Task *-down- TaskStatus
+}
+
+' 4. 関連性の定義
+Participant "1..n" -down- "1" Team : has >
+Task "1..n" -down- "0..n" Participant : has >
+
+@enduml
