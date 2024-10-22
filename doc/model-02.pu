@@ -63,7 +63,7 @@ Task "1..80" -right-> "0..n" Participant
 
 ' 参加者
 entity "Participant" {
-  * id : integer <<PK>>
+  * id : string <<PK>>
   --
   + name : string <<NOT NULL>>
   + mailAddress : string <<UNIQUE, NOT NULL>>
@@ -79,7 +79,7 @@ entity "Participant_Status" {
 
 ' チーム
 entity "Team" {
-  * id : integer <<PK>>
+  * id : string <<PK>>
   --
   + name : string <<NOT NULL>>
 }
@@ -88,22 +88,22 @@ entity "Team" {
 ' あえて中間テーブルで設定
 ' https://zenn.dev/praha/articles/65afb28caacd0b
 entity "TeamMember" {
-  * participant_id : integer <<FK>>
-  * team_id : integer <<FK>>
+  * participant_id : string <<FK>>
+  * team_id : string <<FK>>
 }
 
 ' 課題の状況
 entity "Task" {
-  * participant_id : integer <<FK>>
-  * task_content_id : integer <<FK>>
+  * participant_id : string <<FK>>
+  * task_content_id : string <<FK>>
   * task_status_id : integer <<FK>>
 }
 
 ' 課題
 entity "Task_Content" {
-  * id : integer <<PK>>
+  * id : string <<PK>>
   --
-  + title : string
+  + title : string <<NOT NULL>>
   + content : text
 }
 
