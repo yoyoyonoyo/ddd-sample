@@ -32,7 +32,7 @@ note bottom of Student
     - ステータスが「在籍中」ではない場合、どのチームにも所属してはいけない
 end note
 
-note bottom of Team
+note left of Team
     - チームには名前がある
     - チームの人数は2〜4名
     - 人数が変動したときの挙動については生徒の増減に関する仕様を参照
@@ -41,7 +41,7 @@ note bottom of Team
 end note
 
 ' 4. 関連性の定義
-Student "1..n" <-left- "1" TeamMember
-Team "1..n" -right-* "1" TeamMember
+Student "0..n" <-left- "1" TeamMember
+Team "0..n" *-down- "1" TeamMember
 
 @enduml
