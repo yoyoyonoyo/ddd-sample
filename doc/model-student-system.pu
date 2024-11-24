@@ -1,0 +1,47 @@
+' https://little-hands.hatenablog.com/entry/2019/05/11/genba-ddd-handson
+@startuml プラハチャレンジ進捗管理システム
+
+skinparam packageStyle rectangle
+
+' 1. エンティティの定義
+package チーム集約 {
+    class "チーム(Team)" as Team << (R,red) RootEntity >> {
+        Id: TeamId
+        Name: チーム名
+    }
+
+    class "チームメンバー" as TeamMember << (E, green) Entity >>  {
+        TeamId: TeamId
+        StudentId: StudentId
+    }
+}
+
+package 生徒集約 {
+    class "生徒(Student)" as Student << (R,red) RootEntity >>  {
+        Id: StudentId
+        Name: 名前
+        MailAddress: メールアドレス
+        Status: 在関ステータス
+    }
+}
+
+' 3. ルールの追加
+note bottom of Student
+    - 名前とメールアドレスを持つ
+    - メールアドレスの重複は許されない
+    - ステータスが「在籍中」ではない場合、どのチームにも所属してはいけない
+end note
+
+note bottom of Team
+    - チームには名前がある
+    - チームの人数は2〜4名
+    - 人数が変動したときの挙動については生徒の増減に関する仕様を参照
+    - チームの名前はa, b, c, dのような英文字でなければいけない
+    - チームの名前は重複不可
+end note
+
+' 4. 関連性の定義
+Student "1..n" <-left- "1" TeamMember
+Team "1..n" -right-* "1" TeamMember
+
+@enduml

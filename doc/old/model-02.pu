@@ -10,23 +10,32 @@ package チーム集約 {
         Name: チーム名
     }
 
-    class "参加者(Participant)" as Participant << (E, green) Entity >>  {
-        Id: ParticipantId
+    class "チームメンバー" as TeamMember << (E, green) Entity >>  {
+        TeamId: TeamId
+        StudentId: StudentId
+    }
+}
+
+package 生徒集約 {
+    class "生徒(Student)" as Student << (E, green) Entity >>  {
+        Id: StudentId
         Name: 名前
         MailAddress: メールアドレス
         Status: 在関ステータス
     }
 }
 
+
 package 課題集約 {
     class "課題(Task)" as Task  << (R,red) RootEntity >> {
         Id: TaskId
-        Status: ステータス
+        StudentId: StudentId
+        ContentId: ContentId
     }
 }
 
 ' 3. ルールの追加
-note bottom of Participant
+note bottom of Student
     - 名前とメールアドレスを持つ
     - メールアドレスの重複は許されない
     - ステータスが「在籍中」ではない場合、どのチームにも所属してはいけない
@@ -35,14 +44,14 @@ end note
 note bottom of Team
     - チームには名前がある
     - チームの人数は2〜4名
-    - 人数が変動したときの挙動については参加者の増減に関する仕様を参照
+    - 人数が変動したときの挙動については生徒の増減に関する仕様を参照
     - チームの名前はa, b, c, dのような英文字でなければいけない
     - チームの名前は重複不可
 end note
 
 note bottom of Task
-    - 全ての参加者は複数の課題（80個ぐらい）を所有（割り当てられて）いる
-    - 参加者ごとに進捗ステータスがある
+    - 全ての生徒は複数の課題（80個ぐらい）を所有（割り当てられて）いる
+    - 生徒ごとに進捗ステータスがある
     - 進捗ステータスは「未着手、取組中、レビュー待ち、完了」いずれかの値を持つ
     - 進捗ステータス変更可否の条件は以下の通り
         - 「未着手」は、「取組中」にのみ変更できる
@@ -53,25 +62,26 @@ note bottom of Task
 end note
 
 ' 4. 関連性の定義
-Participant "1..n" -right-> "1" Team
-Task "1..80" -right-> "0..n" Participant
+Student "1..n" -right-> "1" Team
+Team "1..n" -right-* "1" TeamMember
+Task "1..80" -right-> "0..n" Student
 
 @enduml
 
 
 @startuml db
 
-' 参加者
-entity "Participant" {
+' 生徒
+entity "Student" {
   * id : string <<PK>>
   --
   + name : string <<NOT NULL>>
   + mailAddress : string <<UNIQUE, NOT NULL>>
-  + participant_status_id : integer <<FK>>
+  + Student_status_id : integer <<FK>>
 }
 
-' 参加者の状態
-entity "Participant_Status" {
+' 生徒の状態
+entity "Student_Status" {
   * id : integer <<PK>>
   --
   + name : string <<UNIQUE, NOT NULL>>
@@ -84,17 +94,17 @@ entity "Team" {
   + name : string <<NOT NULL>>
 }
 
-' チームの参加者
+' チームの生徒
 ' あえて中間テーブルで設定
 ' https://zenn.dev/praha/articles/65afb28caacd0b
 entity "TeamMember" {
-  * participant_id : string <<FK>>
+  * Student_id : string <<FK>>
   * team_id : string <<FK>>
 }
 
 ' 課題の状況
 entity "Task" {
-  * participant_id : string <<FK>>
+  * Student_id : string <<FK>>
   * task_content_id : string <<FK>>
   * task_status_id : integer <<FK>>
 }
@@ -115,18 +125,18 @@ entity "Task_Status" {
   + name : string <<UNIQUE, NOT NULL>>
 }
 
-' 1つの参加者は1つの参加者の状態を持つ
-Participant ||--|| Participant_Status
-' 1つの参加者は0以上の複数のチームを持つ
+' 1つの生徒は1つの生徒の状態を持つ
+Student ||--|| Student_Status
+' 1つの生徒は0以上の複数のチームを持つ
 ' あえて中間テーブルで設定
 ' https://zenn.dev/praha/articles/65afb28caacd0b
-Participant ||--o| TeamMember
+Student ||--o| TeamMember
 
-' 1つのチームは1以上の複数の参加者を持つ
+' 1つのチームは1以上の複数の生徒を持つ
 Team ||--|{ TeamMember
 
-' 1つの参加者は0以上の複数の課題を持つ
-Participant ||--o{ Task
+' 1つの生徒は0以上の複数の課題を持つ
+Student ||--o{ Task
 
 ' 1つのタスクは1つのコンテンツを持つ
 Task ||--|| Task_Content

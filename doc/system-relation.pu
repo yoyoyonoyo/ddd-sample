@@ -1,0 +1,36 @@
+@startuml system-relation
+
+' システム関連図は、開発するシステムと、
+' 関わりのあるアクターや外部システムとの関連を示す図。
+
+' 以下を気をつけて作成する
+' • これは誰が使うシステムなのか?
+' プラハの生徒と管理者が使うシステム
+' • 開発するシステムはどう使うのか?
+' 今回はバックエンドのみ
+' フロントは考えない
+' サンプルコードP17
+
+actor "生徒" as Student
+actor "管理者" as Admin
+
+left to right direction
+
+
+rectangle 開発するシステム as Develop #line.dashed {
+    rectangle 課題管理システム as TaskManagementSystem {
+    }
+    rectangle 生徒管理システム as StudentManagementSystem
+}
+
+rectangle メール送信サービス as MailService
+
+
+Student -- TaskManagementSystem
+StudentManagementSystem -- Admin
+
+StudentManagementSystem --> MailService: メール送信リクエスト
+
+
+
+@enduml

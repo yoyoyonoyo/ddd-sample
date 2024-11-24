@@ -1,0 +1,148 @@
+@startuml object
+
+' オブジェクト図は
+' ユーザーの要求に対するシステムの振る舞いを定義する図です。
+' サンプルコードP18
+
+' - 参加者
+'     - 名前とメールアドレスを持つ
+'     - メールアドレスの重複は許容されない
+'     - 在籍ステータスを持つ。取りうる値は「在籍中」「休会中」「退会済」の3つ
+'         - ステータスが「在籍中」ではない場合、どのチームにも所属してはいけない
+' - チーム
+'     - チームには名前がある
+'     - チームの名前はa, b, c, dのような英文字でなければいけない
+'     - チームの名前は重複不可
+'     - チームの人数は2〜4名。人数が変動したときの挙動については[参加者の増減に関する仕様](https://www.notion.so/1-4a8b67f9c79b4571b4f31e57bf8372c7?pvs=21)を参照
+' - 課題
+'     - 全ての参加者は複数の課題（80個ぐらい）を所有（割り当てられて）いる
+'         - 例えば参加者Aが課題を80個、参加者Bが課題を80個所有している
+'     - 課題には、参加者ごとに進捗ステータスがある
+'         - 進捗ステータスは「未着手、取組中、レビュー待ち、完了」いずれかの値を持つ
+'         - 進捗ステータス変更可否の条件は以下の通り
+'             - 「未着手」は、「取組中」にのみ変更できる
+'             - 「取組中」は「レビュー待ち」にのみ変更できる
+'             - 「レビュー待ち」は、「取組中」もしくは「完了」に変更できる
+'             - 「完了」は変更できない
+'         - 進捗ステータスを変更できるのは、課題の所有者だけ（Aさんの課題1の進捗ステータスを変えられるのはAさんだけ。Aさんの課題1の進捗ステータスをBさんが変更するのは不可能）
+
+
+rectangle {
+    object "チーム" as TeamA {
+        チームID: "UUIDT1"
+        名前: "a"
+    }
+
+    object "メンバー" as TeamAMember1 {
+        チームID: "UUIDT1"
+        生徒ID: "UUIDS1"
+    }
+    object "メンバー" as TeamAMember2 {
+        チームID: "UUIDT1"
+        生徒ID: "UUIDS2"
+    }
+    object "メンバー" as TeamAMember3 {
+        チームID: "UUIDT1"
+        生徒ID: "UUIDS3"
+    }
+    object "メンバー" as TeamAMember4 {
+        チームID: "UUIDT1"
+        生徒ID: "UUIDS4"
+    }
+
+    TeamAMember1 -left-* TeamA
+    TeamAMember2 -left-* TeamA
+    TeamAMember3 -left-* TeamA
+    TeamAMember4 -left-* TeamA
+}
+
+object "生徒" as Student1 {
+    生徒ID: "UUIDS1"
+    名前: "花子 その１"
+    メールアドレス: "hanako1@gmail.com"
+    在籍状況: "在籍中"
+}
+
+object "生徒" as Student2 {
+    生徒ID: "UUIDS2"
+    名前: "花子 その2"
+    メールアドレス: "hanako2@gmail.com"
+    在籍状況: "在籍中"
+}
+
+object "生徒" as Student3 {
+    生徒ID: "UUIDS3"
+    名前: "花子 その3"
+    メールアドレス: "hanako3@gmail.com"
+    在籍状況: "在籍中"
+}
+
+object "生徒" as Student4 {
+    生徒ID: "UUIDS4"
+    名前: "花子 その4"
+    メールアドレス: "hanako4@gmail.com"
+    在籍状況: "在籍中"
+}
+
+TeamAMember1 -down-> Student1
+TeamAMember2 -down-> Student2
+TeamAMember3 -down-> Student3
+TeamAMember4 -down-> Student4
+
+
+rectangle {
+    object "チーム" as TeamB {
+        チームID: "UUIDT2"
+        名前: "b"
+    }
+    object "メンバー" as TeamBMember1 {
+        チームID: "UUIDT2"
+        生徒ID: "UUIDS5"
+    }
+    object "メンバー" as TeamBMember2 {
+        チームID: "UUIDT2"
+        生徒ID: "UUIDS6"
+    }
+
+    TeamBMember1 -left-* TeamB
+    TeamBMember2 -left-* TeamB
+}
+
+
+
+object "生徒" as Student5 {
+    生徒ID: "UUIDS5"
+    名前: "花子 その5"
+    メールアドレス: "hanako5@gmail.com"
+    在籍状況: "在籍中"
+}
+
+object "生徒" as Student6 {
+    生徒ID: "UUIDS6"
+    名前: "花子 その6"
+    メールアドレス: "hanako6@gmail.com"
+    在籍状況: "在籍中"
+}
+
+TeamBMember1 -down-> Student5
+TeamBMember2 -down-> Student6
+
+
+rectangle {
+    object "生徒" as Student7 {
+        名前: "花子 その7"
+        メールアドレス: "hanako7@gmail.com"
+        在籍状況: "退会済"
+    }
+
+    object "生徒" as Student8 {
+        名前: "花子 その8"
+        メールアドレス: "hanako8@gmail.com"
+        在籍状況: "休会中"
+    }
+}
+
+
+@enduml
+
+' https://tech.contracts.co.jp/entry/2020/10/16/150605

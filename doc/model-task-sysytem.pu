@@ -1,0 +1,59 @@
+' https://little-hands.hatenablog.com/entry/2019/05/11/genba-ddd-handson
+@startuml プラハチャレンジ進捗管理システム
+
+skinparam packageStyle rectangle
+
+' 1. エンティティの定義
+package 生徒集約 {
+    class "生徒(Student)" as Student << (R, Red) Entity >>  {
+        Id: StudentId
+        Name: 名前
+        MailAddress: メールアドレス
+        Status: 在関ステータス
+    }
+}
+
+package 課題集約 {
+    class "課題(Task)" as Task  << (R,red) RootEntity >> {
+        Id: TaskId
+        StudentId: StudentId
+        ContentId: ContentId
+    }
+
+    class "コンテンツ" as TaskContent << (E, green) Entity >>  {
+        TeamId: TeamId
+        StudentId: StudentId
+    }
+
+    class "状態" as TaskStatus << (E, green) Entity >>  {
+        TeamId: TeamId
+        StudentId: StudentId
+    }
+}
+
+' 3. ルールの追加
+note bottom of Student
+    - 名前とメールアドレスを持つ
+    - メールアドレスの重複は許されない
+    - ステータスが「在籍中」ではない場合、どのチームにも所属してはいけない
+end note
+
+
+note left of Task
+    - 全ての生徒は複数の課題（80個ぐらい）を所有（割り当てられて）いる
+    - 生徒ごとに進捗ステータスがある
+    - 進捗ステータスは「未着手、取組中、レビュー待ち、完了」いずれかの値を持つ
+    - 進捗ステータス変更可否の条件は以下の通り
+        - 「未着手」は、「取組中」にのみ変更できる
+        - 「取組中」は「レビュー待ち」にのみ変更できる
+        - 「レビュー待ち」は、「取組中」もしくは「完了」に変更できる
+        - 「完了」は変更できない
+    - 進捗ステータスを変更できるのは、課題の所有者だけ
+end note
+
+' 4. 関連性の定義
+Task "1..80" -right-> "0..n" Student
+Task "1" *--- "1" TaskContent
+Task "1" *--- "1" TaskStatus
+
+@enduml

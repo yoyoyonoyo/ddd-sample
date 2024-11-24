@@ -1,63 +1,52 @@
-@startuml 参加者
+@startuml usecase
 
-actor "参加者" as Participant
+actor "生徒" as Student
 actor "管理者" as Admin
 
 left to right direction
 
-rectangle 課題 as Task {
-    usecase "取得" as UC1
-    usecase "変更" as UC2
+' ユースケース図は
+' ユーザーの要求に対するシステムの振る舞いを定義する図です。
+' サンプルコードP18
 
-    Participant -- UC1
-    Participant -- UC2
+' ユースケース一覧
+' - (管理者)参加者の一覧取得、新規追加、更新（在籍ステータスを変更できること）
+' - (管理者)チームの一覧取得、更新（チームに所属する参加者を変更できること）
+' - (生徒)課題の更新（特定の参加者の課題進捗ステータスを変更できること）
+' - (管理者)「特定の課題（複数可能）」が「特定の進捗ステータス」になっている参加者の一覧を、10人単位でページングして取得する
+'     - 例１：「設計原則（SOLID）」と「DBモデリング１」を「レビュー完了」している参加者一覧を取得する
+'     - 例２：「DBモデリング3」を「未着手」の参加者一覧を取得する
+'     - 条件に合致する参加者を全て取得するのではなく、10名ずつ取得する点（ページング）にご注意ください！
+
+rectangle 課題管理システム as TaskManagementSystem {
+    usecase "課題の更新" as T_UC1
+    usecase "課題の取得" as T_UC2
+
+    Student -- T_UC1
+    T_UC2 -- Admin
 }
 
+note right of T_UC1: 生徒は自分の課題のみ更新できる
+note right of T_UC2:「特定の課題（複数可能）」が\n「特定の進捗ステータス」\nになっている参加者の一覧を、\n10人単位でページングして取得する
 
-rectangle サブスク as Subscription {
-    usecase "休会" as UC3
-    usecase "退会" as UC4
-    usecase "復帰" as UC5
+rectangle 生徒管理システム as StudentManagementSystem {
+    usecase "生徒の一覧取得" as S_UC1
+    usecase "生徒の新規追加" as S_UC2
+    usecase "生徒の更新" as S_UC3
+    usecase "チームの一覧取得" as S_UC4
+    usecase "チームの更新" as S_UC5
 
-    Participant -- UC3
-    Participant -- UC4
-    Participant -- UC5
+    S_UC1 -- Admin
+    S_UC2 -- Admin
+    S_UC3 -- Admin
+    S_UC4 -- Admin
+    S_UC5 -- Admin
 }
 
-rectangle チーム as Team {
-    usecase "参加" as UC6
-    usecase "脱退" as UC7
-
-    UC6 -- Admin
-    UC7 -- Admin
-}
-
-Participant -- Team
-brew search postgresql
-note right of UC1: 参加者は自分の課題のみ閲覧できる
-note right of UC2: 参加者は自分の課題のみステータスを変更できる
+note left of S_UC3: 在籍ステータスを変更できること
+note left of S_UC5: チームに所属する参加者を変更できること
 
 
 @enduml
-
-
-' @startuml 管理者
-
-' actor 参加者 as Participant
-' actor 管理者 as Admin
-
-' usecase 自分の課題を取得する
-' usecase 自分の課題のステータスを変更する
-' usecase 休会・退会する
-
-
-' left to right direction
-' rectangle {
-'     参加者 -- (課題を取得する)
-'     参加者 -- (テストを進める)
-'     (キューブをあげる) -- 社員
-' }
-
-' @enduml
 
 ' https://tech.contracts.co.jp/entry/2020/10/16/150605
