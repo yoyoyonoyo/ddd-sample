@@ -8,6 +8,7 @@ import {
 } from "../../application/use-case/edit-task-title-use-case";
 import { PostgresqlTaskRepository } from "../../infrastructure/repository/postgresql-task-repository";
 import { getDatabase } from "../../libs/drizzle/get-database";
+import { TaskStatusList } from "../../domain/task/task_status";
 
 type Env = {
   Variables: {
@@ -18,21 +19,22 @@ type Env = {
 export const editTaskTitleController = new Hono<Env>();
 
 editTaskTitleController.post(
-  "/tasks/:id/edit",
-  zValidator("param", z.object({ id: z.string() }), (result, c) => {
-    if (!result.success) {
-      return c.text("invalid id", 400);
-    }
+  "/tasks/edit",
+  zValidator(
+    "json",
+    z.object({
+      studentId: z.string(),
+      taskContentId: z.string(),
+      taskStatus: z.enum(TaskStatusList),
+    }),
+    (result, c) => {
+      if (!result.success) {
+        return c.text("invalid body", 400);
+      }
 
-    return;
-  }),
-  zValidator("json", z.object({ title: z.string() }), (result, c) => {
-    if (!result.success) {
-      return c.text("invalid body", 400);
+      return;
     }
-
-    return;
-  }),
+  ),
   createMiddleware<Env>(async (context, next) => {
     const database = getDatabase();
     const taskRepository = new PostgresqlTaskRepository(database);
@@ -43,12 +45,12 @@ editTaskTitleController.post(
   }),
   async (context) => {
     try {
-      const param = context.req.valid("param");
       const body = context.req.valid("json");
 
       const payload = await context.var.editTaskTitleUseCase.invoke({
-        taskId: param.id,
-        title: body.title,
+        taskContentId: body.taskContentId,
+        taskStatus: body.taskStatus,
+        studentId: body.studentId,
       });
       return context.json(payload);
     } catch (error) {
@@ -58,5 +60,5 @@ editTaskTitleController.post(
 
       throw error;
     }
-  },
+  }
 );

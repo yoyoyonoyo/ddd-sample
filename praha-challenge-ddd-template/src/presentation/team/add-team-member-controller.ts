@@ -2,42 +2,41 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { createMiddleware } from "hono/factory";
 import { z } from "zod";
-import {
-  EditTaskTitleUseCase,
-  EditTaskTitleUseCaseNotFoundError,
-} from "../../application/use-case/edit-task-title-use-case";
-import { PostgresqlTaskRepository } from "../../infrastructure/repository/postgresql-task-repository";
 import { getDatabase } from "../../libs/drizzle/get-database";
+import {
+  EditTeamMemberUseCase,
+  EditTeamMemberUseCaseNotFoundError,
+} from "../../application/use-case/edit-team-member-use-case";
+import { PostgresqlTeamRepository } from "../../infrastructure/repository/postgresql-team-repository";
 
 type Env = {
   Variables: {
-    editTaskTitleUseCase: EditTaskTitleUseCase;
+    editTeamMemberUseCase: EditTeamMemberUseCase;
   };
 };
 
-export const editStudentController = new Hono<Env>();
+export const addTeamMemberController = new Hono<Env>();
 
-editStudentController.post(
-  "/tasks/:id/edit",
+addTeamMemberController.post(
+  "/teams/:id/add",
   zValidator("param", z.object({ id: z.string() }), (result, c) => {
     if (!result.success) {
       return c.text("invalid id", 400);
     }
-
     return;
   }),
-  zValidator("json", z.object({ title: z.string() }), (result, c) => {
+  zValidator("json", z.object({ id: z.string() }), (result, c) => {
     if (!result.success) {
+      console.log(result.error);
       return c.text("invalid body", 400);
     }
-
     return;
   }),
   createMiddleware<Env>(async (context, next) => {
     const database = getDatabase();
-    const taskRepository = new PostgresqlTaskRepository(database);
-    const editTaskTitleUseCase = new EditTaskTitleUseCase(taskRepository);
-    context.set("editTaskTitleUseCase", editTaskTitleUseCase);
+    const teamRepository = new PostgresqlTeamRepository(database);
+    const editTeamMemberUseCase = new EditTeamMemberUseCase(teamRepository);
+    context.set("editTeamMemberUseCase", editTeamMemberUseCase);
 
     await next();
   }),
@@ -46,17 +45,18 @@ editStudentController.post(
       const param = context.req.valid("param");
       const body = context.req.valid("json");
 
-      const payload = await context.var.editTaskTitleUseCase.invoke({
-        taskId: param.id,
-        title: body.title,
+      const payload = await context.var.editTeamMemberUseCase.addMember({
+        teamId: param.id,
+        StudentId: body.id,
       });
+
       return context.json(payload);
     } catch (error) {
-      if (error instanceof EditTaskTitleUseCaseNotFoundError) {
+      if (error instanceof EditTeamMemberUseCaseNotFoundError) {
         return context.text(error.message, 404);
       }
 
       throw error;
     }
-  },
+  }
 );

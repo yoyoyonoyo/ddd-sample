@@ -1,42 +1,107 @@
-import { pgTable, varchar, integer, text } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import {
+  integer,
+  pgTable,
+  primaryKey,
+  text,
+  varchar,
+} from "drizzle-orm/pg-core";
 
-export const participant = pgTable("participant", {
+export const students = pgTable("students", {
   id: varchar("id").primaryKey(),
   name: varchar("name").notNull(),
-  mailaddress: varchar("mailaddress").unique().notNull(),
-  participant_status_id: integer("participant_status_id").references(
-    () => participant_status.id
-  ),
+  mailAddress: varchar("mail_address").unique().notNull(),
+  status: varchar("status").notNull(),
 });
 
-export const participant_status = pgTable("participant_status", {
-  id: integer("id").primaryKey(),
-  name: varchar("name").unique().notNull(),
-});
+export const studentsRelations = relations(students, ({ many }) => ({
+  teamMember: many(teamMember),
+  tasks: many(tasks),
+}));
 
-export const team = pgTable("team", {
+export const teams = pgTable("teams", {
   id: varchar("id").primaryKey(),
-  name: varchar("name").notNull(),
+  name: varchar("name").notNull().unique(),
 });
 
-export const team_member = pgTable("team_member", {
-  participant_id: varchar("participant_id").references(() => participant.id),
-  team_id: varchar("team_id").references(() => team.id),
-});
+export const teamsRelations = relations(teams, ({ many }) => ({
+  teamMember: many(teamMember),
+}));
 
-export const task = pgTable("task", {
-  participant_id: varchar("participant_id").references(() => participant.id),
-  task_content_id: varchar("task_content_id").references(() => task_content.id),
-  task_status_id: integer("task_status_id").references(() => task_status.id),
-});
+export const teamMember = pgTable(
+  "team_member",
+  {
+    studentId: varchar("students_id").references(() => students.id),
+    teamId: varchar("team_id").references(() => teams.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.studentId, t.teamId] }),
+  })
+);
 
-export const task_content = pgTable("task_content", {
+export const teamMemberRelations = relations(teamMember, ({ one }) => ({
+  team: one(teams, {
+    fields: [teamMember.teamId],
+    references: [teams.id],
+  }),
+  students: one(students, {
+    fields: [teamMember.studentId],
+    references: [students.id],
+  }),
+}));
+
+export const tasks = pgTable(
+  "tasks",
+  {
+    taskContentId: varchar("task_content_id").references(() => taskContents.id),
+    taskStatusId: integer("task_status_id").references(() => taskStatus.id),
+    studentId: varchar("student_id").references(() => students.id),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({
+        columns: [table.taskContentId, table.studentId],
+      }),
+    };
+  }
+);
+
+export const taskRelations = relations(tasks, ({ one }) => ({
+  students: one(students, {
+    fields: [tasks.studentId],
+    references: [students.id],
+  }),
+  taskContent: one(taskContents, {
+    fields: [tasks.taskContentId],
+    references: [taskContents.id],
+  }),
+  taskStatus: one(taskStatus, {
+    fields: [tasks.taskStatusId],
+    references: [taskStatus.id],
+  }),
+}));
+
+export const taskContents = pgTable("task_contents", {
   id: varchar("id").primaryKey(),
   title: varchar("title").notNull(),
   content: text("content"),
 });
 
-export const task_status = pgTable("task_status", {
+export const taskContentRelations = relations(taskContents, ({ one }) => ({
+  task: one(tasks, {
+    fields: [taskContents.id],
+    references: [tasks.taskContentId],
+  }),
+}));
+
+export const taskStatus = pgTable("task_status", {
   id: integer("id").primaryKey(),
   name: varchar("name").unique().notNull(),
 });
+
+export const taskStatusRelations = relations(taskStatus, ({ one }) => ({
+  task: one(tasks, {
+    fields: [taskStatus.id],
+    references: [tasks.taskContentId],
+  }),
+}));

@@ -2,39 +2,47 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { createMiddleware } from "hono/factory";
 import { z } from "zod";
-import { CreateTaskUseCase } from "../../application/use-case/create-task-use-case";
-import { PostgresqlTaskRepository } from "../../infrastructure/repository/postgresql-task-repository";
+import { CreateStudentUseCase } from "../../application/use-case/create-student-use-case";
+import { PostgresqlStudentRepository } from "../../infrastructure/repository/postgresql-student-repository";
+import { PostgresqlTeamRepository } from "../../infrastructure/repository/postgresql-team-repository";
 import { getDatabase } from "../../libs/drizzle/get-database";
 
 type Env = {
   Variables: {
-    createTaskUseCase: CreateTaskUseCase;
+    createStudentUseCase: CreateStudentUseCase;
   };
 };
 
 export const createStudentController = new Hono<Env>();
 
 createStudentController.post(
-  "/tasks/new",
-  zValidator("json", z.object({ title: z.string() }), (result, c) => {
-    if (!result.success) {
-      return c.text("invalid title", 400);
+  "/Students/new",
+  zValidator(
+    "json",
+    z.object({ name: z.string(), mailAddress: z.string().email() }),
+    (result, c) => {
+      if (!result.success) {
+        return c.text(`${result.error}`, 400);
+      }
+      return;
     }
-
-    return;
-  }),
+  ),
   createMiddleware<Env>(async (context, next) => {
     const database = getDatabase();
-    const taskRepository = new PostgresqlTaskRepository(database);
-    const createTaskUseCase = new CreateTaskUseCase(taskRepository);
-    context.set("createTaskUseCase", createTaskUseCase);
+    const StudentsRepository = new PostgresqlStudentRepository(database);
+    const teamRepository = new PostgresqlTeamRepository(database);
+    const createStudentsUseCase = new CreateStudentUseCase(
+      StudentsRepository,
+      teamRepository
+    );
+    context.set("createStudentUseCase", createStudentsUseCase);
 
     await next();
   }),
   async (context) => {
     const body = context.req.valid("json");
 
-    const payload = await context.var.createTaskUseCase.invoke(body);
+    const payload = await context.var.createStudentUseCase.invoke(body);
     return context.json(payload);
-  },
+  }
 );

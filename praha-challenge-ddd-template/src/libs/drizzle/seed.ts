@@ -1,77 +1,59 @@
 import "dotenv/config";
 import {
-  participant,
-  participant_status,
-  task,
-  task_content,
-  task_status,
-  team,
-  team_member,
+  students,
+  tasks,
+  taskContents,
+  taskStatus,
+  teams,
+  teamMember,
 } from "./schema";
 import { getDatabase } from "./get-database";
 
 const db = getDatabase();
 
 async function main() {
-  const participantStatus: (typeof participant_status.$inferInsert)[] = [
-    {
-      id: 1,
-      name: "在籍中",
-    },
-    {
-      id: 2,
-      name: "休会中",
-    },
-    {
-      id: 3,
-      name: "退会済",
-    },
-  ];
-
-  await db.insert(participant_status).values(participantStatus);
-
-  const participants: (typeof participant.$inferInsert)[] = [
+  const studentsData: (typeof students.$inferInsert)[] = [
     {
       id: "01JASH2PBKVGJKDHA6B4N1KRRG",
       name: "図子稔勝",
-      mailaddress: "test1@example.com",
-      participant_status_id: 1,
+      mailAddress: "test1@example.com",
+      status: "在籍中",
     },
     {
       id: "01JASH2PBKZADP7C8W1D8PC0AV",
       name: "図子亜実",
-      mailaddress: "test2@example.com",
-      participant_status_id: 1,
+      mailAddress: "test2@example.com",
+      status: "在籍中",
     },
     {
       id: "01JASH2PBKXGK96KHZD8ACPR1Y",
       name: "瀬尾相模",
-      mailaddress: "test3@example.com",
-      participant_status_id: 1,
+      mailAddress: "test3@example.com",
+      status: "在籍中",
     },
     {
       id: "01JASH2PBK6S7J8ZREJWZTSBN6",
       name: "瀬尾淳子",
-      mailaddress: "test4@example.com",
-      participant_status_id: 1,
+      mailAddress: "test4@example.com",
+      status: "在籍中",
     },
     {
       id: "01JASH2PBKD67B7XNWSKBNPK5B",
       name: "矢島渉",
-      mailaddress: "test5@example.com",
-      participant_status_id: 2,
+      mailAddress: "test5@example.com",
+      status: "休会中",
     },
     {
       id: "01JASJQXYSC6KV1E11T3VM7ABA",
       name: "矢島曜",
-      mailaddress: "test6@example.com",
-      participant_status_id: 3,
+      mailAddress: "test6@example.com",
+      status: "退会済",
     },
   ];
 
-  await db.insert(participant).values(participants);
+  await db.insert(students).values(studentsData);
 
-  const taskContents: (typeof task_content.$inferInsert)[] = [
+  const taskContentsData: (typeof taskContents.$inferInsert)[] = [
     {
       id: "01JASHREBAJW2FTV66XAJV18JV",
       title: "課題1",
@@ -89,157 +71,157 @@ async function main() {
     },
   ];
 
-  await db.insert(task_content).values(taskContents);
+  await db.insert(taskContents).values(taskContentsData);
 
-  const taskStatus: (typeof task_status.$inferInsert)[] = [
+  const taskStatusList: (typeof taskStatus.$inferInsert)[] = [
     {
-      id: 1,
+      id: 0,
       name: "未着手",
     },
     {
-      id: 2,
+      id: 1,
       name: "取組中",
     },
     {
-      id: 3,
+      id: 2,
       name: "レビュー待ち",
     },
     {
-      id: 4,
+      id: 3,
       name: "完了",
     },
   ];
 
-  await db.insert(task_status).values(taskStatus);
+  await db.insert(taskStatus).values(taskStatusList);
 
-  const tasks: (typeof task.$inferInsert)[] = [
+  const tasksData: (typeof tasks.$inferInsert)[] = [
     {
-      participant_id: "01JASH2PBKVGJKDHA6B4N1KRRG",
-      task_content_id: "01JASHREBAJW2FTV66XAJV18JV",
-      task_status_id: 1,
+      studentId: "01JASH2PBKVGJKDHA6B4N1KRRG",
+      taskContentId: "01JASHREBAJW2FTV66XAJV18JV",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKVGJKDHA6B4N1KRRG",
-      task_content_id: "01JASHREBAXSB5QR47PZWNS5GD",
-      task_status_id: 1,
+      studentId: "01JASH2PBKVGJKDHA6B4N1KRRG",
+      taskContentId: "01JASHREBAXSB5QR47PZWNS5GD",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKVGJKDHA6B4N1KRRG",
-      task_content_id: "01JASHREBABFGJNBJANV2PQEQJ",
-      task_status_id: 1,
+      studentId: "01JASH2PBKVGJKDHA6B4N1KRRG",
+      taskContentId: "01JASHREBABFGJNBJANV2PQEQJ",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKZADP7C8W1D8PC0AV",
-      task_content_id: "01JASHREBAJW2FTV66XAJV18JV",
-      task_status_id: 1,
+      studentId: "01JASH2PBKZADP7C8W1D8PC0AV",
+      taskContentId: "01JASHREBAJW2FTV66XAJV18JV",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKZADP7C8W1D8PC0AV",
-      task_content_id: "01JASHREBAXSB5QR47PZWNS5GD",
-      task_status_id: 1,
+      studentId: "01JASH2PBKZADP7C8W1D8PC0AV",
+      taskContentId: "01JASHREBAXSB5QR47PZWNS5GD",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKZADP7C8W1D8PC0AV",
-      task_content_id: "01JASHREBABFGJNBJANV2PQEQJ",
-      task_status_id: 1,
+      studentId: "01JASH2PBKZADP7C8W1D8PC0AV",
+      taskContentId: "01JASHREBABFGJNBJANV2PQEQJ",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKXGK96KHZD8ACPR1Y",
-      task_content_id: "01JASHREBAJW2FTV66XAJV18JV",
-      task_status_id: 1,
+      studentId: "01JASH2PBKXGK96KHZD8ACPR1Y",
+      taskContentId: "01JASHREBAJW2FTV66XAJV18JV",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKXGK96KHZD8ACPR1Y",
-      task_content_id: "01JASHREBAXSB5QR47PZWNS5GD",
-      task_status_id: 1,
+      studentId: "01JASH2PBKXGK96KHZD8ACPR1Y",
+      taskContentId: "01JASHREBAXSB5QR47PZWNS5GD",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKXGK96KHZD8ACPR1Y",
-      task_content_id: "01JASHREBABFGJNBJANV2PQEQJ",
-      task_status_id: 1,
+      studentId: "01JASH2PBKXGK96KHZD8ACPR1Y",
+      taskContentId: "01JASHREBABFGJNBJANV2PQEQJ",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBK6S7J8ZREJWZTSBN6",
-      task_content_id: "01JASHREBAJW2FTV66XAJV18JV",
-      task_status_id: 1,
+      studentId: "01JASH2PBK6S7J8ZREJWZTSBN6",
+      taskContentId: "01JASHREBAJW2FTV66XAJV18JV",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBK6S7J8ZREJWZTSBN6",
-      task_content_id: "01JASHREBAXSB5QR47PZWNS5GD",
-      task_status_id: 1,
+      studentId: "01JASH2PBK6S7J8ZREJWZTSBN6",
+      taskContentId: "01JASHREBAXSB5QR47PZWNS5GD",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBK6S7J8ZREJWZTSBN6",
-      task_content_id: "01JASHREBABFGJNBJANV2PQEQJ",
-      task_status_id: 1,
+      studentId: "01JASH2PBK6S7J8ZREJWZTSBN6",
+      taskContentId: "01JASHREBABFGJNBJANV2PQEQJ",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKD67B7XNWSKBNPK5B",
-      task_content_id: "01JASHREBAJW2FTV66XAJV18JV",
-      task_status_id: 1,
+      studentId: "01JASH2PBKD67B7XNWSKBNPK5B",
+      taskContentId: "01JASHREBAJW2FTV66XAJV18JV",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKD67B7XNWSKBNPK5B",
-      task_content_id: "01JASHREBAXSB5QR47PZWNS5GD",
-      task_status_id: 1,
+      studentId: "01JASH2PBKD67B7XNWSKBNPK5B",
+      taskContentId: "01JASHREBAXSB5QR47PZWNS5GD",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASH2PBKD67B7XNWSKBNPK5B",
-      task_content_id: "01JASHREBABFGJNBJANV2PQEQJ",
-      task_status_id: 1,
+      studentId: "01JASH2PBKD67B7XNWSKBNPK5B",
+      taskContentId: "01JASHREBABFGJNBJANV2PQEQJ",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASJQXYSC6KV1E11T3VM7ABA",
-      task_content_id: "01JASHREBAJW2FTV66XAJV18JV",
-      task_status_id: 1,
+      studentId: "01JASJQXYSC6KV1E11T3VM7ABA",
+      taskContentId: "01JASHREBAJW2FTV66XAJV18JV",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASJQXYSC6KV1E11T3VM7ABA",
-      task_content_id: "01JASHREBAXSB5QR47PZWNS5GD",
-      task_status_id: 1,
+      studentId: "01JASJQXYSC6KV1E11T3VM7ABA",
+      taskContentId: "01JASHREBAXSB5QR47PZWNS5GD",
+      taskStatusId: 0,
     },
     {
-      participant_id: "01JASJQXYSC6KV1E11T3VM7ABA",
-      task_content_id: "01JASHREBABFGJNBJANV2PQEQJ",
-      task_status_id: 1,
+      studentId: "01JASJQXYSC6KV1E11T3VM7ABA",
+      taskContentId: "01JASHREBABFGJNBJANV2PQEQJ",
+      taskStatusId: 0,
     },
   ];
 
-  await db.insert(task).values(tasks);
+  await db.insert(tasks).values(tasksData);
 
-  const teams: (typeof team.$inferInsert)[] = [
+  const teamsData: (typeof teams.$inferInsert)[] = [
     {
       id: "01JASJKWYGF85S1YTRBMTM9JER",
-      name: "team-a",
+      name: "a",
     },
     {
       id: "01JASJKWYGSMRR63BEQ69W0FXG",
-      name: "team-a",
+      name: "b",
     },
   ];
 
-  await db.insert(team).values(teams);
+  await db.insert(teams).values(teamsData);
 
-  const teamMembers: (typeof team_member.$inferInsert)[] = [
+  const teamMembersData: (typeof teamMember.$inferInsert)[] = [
     {
-      participant_id: "01JASH2PBKVGJKDHA6B4N1KRRG",
-      team_id: "01JASJKWYGF85S1YTRBMTM9JER",
+      studentId: "01JASH2PBKVGJKDHA6B4N1KRRG",
+      teamId: "01JASJKWYGF85S1YTRBMTM9JER",
     },
     {
-      participant_id: "01JASH2PBKZADP7C8W1D8PC0AV",
-      team_id: "01JASJKWYGF85S1YTRBMTM9JER",
+      studentId: "01JASH2PBKZADP7C8W1D8PC0AV",
+      teamId: "01JASJKWYGF85S1YTRBMTM9JER",
     },
     {
-      participant_id: "01JASH2PBKXGK96KHZD8ACPR1Y",
-      team_id: "01JASJKWYGSMRR63BEQ69W0FXG",
+      studentId: "01JASH2PBKXGK96KHZD8ACPR1Y",
+      teamId: "01JASJKWYGSMRR63BEQ69W0FXG",
     },
     {
-      participant_id: "01JASH2PBK6S7J8ZREJWZTSBN6",
-      team_id: "01JASJKWYGSMRR63BEQ69W0FXG",
+      studentId: "01JASH2PBK6S7J8ZREJWZTSBN6",
+      teamId: "01JASJKWYGSMRR63BEQ69W0FXG",
     },
   ];
 
-  await db.insert(team_member).values(teamMembers);
+  await db.insert(teamMember).values(teamMembersData);
 
   console.log("add complete");
 }

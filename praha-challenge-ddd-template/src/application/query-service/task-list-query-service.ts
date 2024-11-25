@@ -1,9 +1,19 @@
-export type TaskListQueryServicePayload = Array<{
-  id: string;
-  title: string;
-  done: boolean;
-}>;
+//「特定の課題（複数可能）」が
+//「特定の進捗ステータス」になっていて
+//「在籍中」になっている
+// 参加者の一覧を、
+// 10人単位でページングして取得する
+export type TaskListQueryServicePayload = {
+  students: {
+    name: string;
+  }[];
+  nextPage: number;
+};
 
 export interface TaskListQueryServiceInterface {
-  invoke: () => Promise<TaskListQueryServicePayload>;
+  invoke: (value: {
+    taskContentId: string;
+    taskStatus: string;
+    page?: number | undefined;
+  }) => Promise<TaskListQueryServicePayload>;
 }

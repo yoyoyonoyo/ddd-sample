@@ -1,11 +1,11 @@
 {
-  "id": "9c73d184-23f5-4827-a09d-3a6b2dc8ba9d",
+  "id": "1ad13c4e-03d8-4a4e-b8bf-afdb765a3d54",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.participant": {
-      "name": "participant",
+    "public.students": {
+      "name": "students",
       "schema": "",
       "columns": {
         "id": {
@@ -20,58 +20,14 @@
           "primaryKey": false,
           "notNull": true
         },
-        "mailaddress": {
-          "name": "mailaddress",
+        "mail_address": {
+          "name": "mail_address",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
-        "participant_status_id": {
-          "name": "participant_status_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "participant_participant_status_id_participant_status_id_fk": {
-          "name": "participant_participant_status_id_participant_status_id_fk",
-          "tableFrom": "participant",
-          "tableTo": "participant_status",
-          "columnsFrom": [
-            "participant_status_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "participant_mailaddress_unique": {
-          "name": "participant_mailaddress_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "mailaddress"
-          ]
-        }
-      }
-    },
-    "public.participant_status": {
-      "name": "participant_status",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
+        "status": {
+          "name": "status",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
@@ -81,85 +37,17 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "participant_status_name_unique": {
-          "name": "participant_status_name_unique",
+        "students_mail_address_unique": {
+          "name": "students_mail_address_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "name"
+            "mail_address"
           ]
         }
       }
     },
-    "public.task": {
-      "name": "task",
-      "schema": "",
-      "columns": {
-        "participant_id": {
-          "name": "participant_id",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "task_content_id": {
-          "name": "task_content_id",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "task_status_id": {
-          "name": "task_status_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "task_participant_id_participant_id_fk": {
-          "name": "task_participant_id_participant_id_fk",
-          "tableFrom": "task",
-          "tableTo": "participant",
-          "columnsFrom": [
-            "participant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "task_task_content_id_task_content_id_fk": {
-          "name": "task_task_content_id_task_content_id_fk",
-          "tableFrom": "task",
-          "tableTo": "task_content",
-          "columnsFrom": [
-            "task_content_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "task_task_status_id_task_status_id_fk": {
-          "name": "task_task_status_id_task_status_id_fk",
-          "tableFrom": "task",
-          "tableTo": "task_status",
-          "columnsFrom": [
-            "task_status_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.task_content": {
-      "name": "task_content",
+    "public.task_contents": {
+      "name": "task_contents",
       "schema": "",
       "columns": {
         "id": {
@@ -216,8 +104,141 @@
         }
       }
     },
-    "public.team": {
-      "name": "team",
+    "public.tasks": {
+      "name": "tasks",
+      "schema": "",
+      "columns": {
+        "task_content_id": {
+          "name": "task_content_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "task_status_id": {
+          "name": "task_status_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tasks_task_content_id_task_contents_id_fk": {
+          "name": "tasks_task_content_id_task_contents_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "task_contents",
+          "columnsFrom": [
+            "task_content_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tasks_task_status_id_task_status_id_fk": {
+          "name": "tasks_task_status_id_task_status_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "task_status",
+          "columnsFrom": [
+            "task_status_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tasks_student_id_students_id_fk": {
+          "name": "tasks_student_id_students_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "students",
+          "columnsFrom": [
+            "student_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "tasks_task_content_id_student_id_pk": {
+          "name": "tasks_task_content_id_student_id_pk",
+          "columns": [
+            "task_content_id",
+            "student_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.team_member": {
+      "name": "team_member",
+      "schema": "",
+      "columns": {
+        "students_id": {
+          "name": "students_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "team_member_students_id_students_id_fk": {
+          "name": "team_member_students_id_students_id_fk",
+          "tableFrom": "team_member",
+          "tableTo": "students",
+          "columnsFrom": [
+            "students_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "team_member_team_id_teams_id_fk": {
+          "name": "team_member_team_id_teams_id_fk",
+          "tableFrom": "team_member",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "team_member_students_id_team_id_pk": {
+          "name": "team_member_students_id_team_id_pk",
+          "columns": [
+            "students_id",
+            "team_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.teams": {
+      "name": "teams",
       "schema": "",
       "columns": {
         "id": {
@@ -236,56 +257,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.team_member": {
-      "name": "team_member",
-      "schema": "",
-      "columns": {
-        "participant_id": {
-          "name": "participant_id",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "team_id": {
-          "name": "team_id",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
+      "uniqueConstraints": {
+        "teams_name_unique": {
+          "name": "teams_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
         }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "team_member_participant_id_participant_id_fk": {
-          "name": "team_member_participant_id_participant_id_fk",
-          "tableFrom": "team_member",
-          "tableTo": "participant",
-          "columnsFrom": [
-            "participant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "team_member_team_id_team_id_fk": {
-          "name": "team_member_team_id_team_id_fk",
-          "tableFrom": "team_member",
-          "tableTo": "team",
-          "columnsFrom": [
-            "team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      }
     }
   },
   "enums": {},

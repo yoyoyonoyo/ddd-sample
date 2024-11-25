@@ -15,19 +15,20 @@ package 生徒集約 {
 
 package 課題集約 {
     class "課題(Task)" as Task  << (R,red) RootEntity >> {
-        Id: TaskId
         StudentId: StudentId
-        ContentId: ContentId
+        TaskContent: TaskContent
+        TaskStatus: TaskStatus
     }
 
     class "コンテンツ" as TaskContent << (E, green) Entity >>  {
-        TeamId: TeamId
-        StudentId: StudentId
+        Id: TaskContentId
+        Title: タイトル
+        Content: コンテンツ
     }
 
     class "状態" as TaskStatus << (E, green) Entity >>  {
-        TeamId: TeamId
-        StudentId: StudentId
+        Id: TaskStatusId
+        Status: タスクの状態
     }
 }
 

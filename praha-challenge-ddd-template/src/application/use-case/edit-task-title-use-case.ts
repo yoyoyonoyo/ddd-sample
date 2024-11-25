@@ -1,14 +1,23 @@
 import type { TaskRepositoryInterface } from "../../domain/task/task-repository";
+import { TaskStatusList } from "../../domain/task/task_status";
 
 export type EditTaskTitleUseCaseInput = {
-  taskId: string;
-  title: string;
+  taskContentId: string;
+  taskStatus: (typeof TaskStatusList)[number];
+  studentId: string;
 };
 
 export type EditTaskTitleUseCasePayload = {
-  id: string;
-  title: string;
-  done: boolean;
+  studentId: string;
+  taskStatus: {
+    id: number;
+    status: (typeof TaskStatusList)[number];
+  };
+  taskContent: {
+    id: string;
+    title: string;
+    content: string | undefined;
+  };
 };
 
 export class EditTaskTitleUseCaseNotFoundError extends Error {
@@ -21,25 +30,25 @@ export class EditTaskTitleUseCaseNotFoundError extends Error {
 
 export class EditTaskTitleUseCase {
   public constructor(
-    private readonly taskRepository: TaskRepositoryInterface,
+    private readonly taskRepository: TaskRepositoryInterface
   ) {}
 
   public async invoke(
-    input: EditTaskTitleUseCaseInput,
+    input: EditTaskTitleUseCaseInput
   ): Promise<EditTaskTitleUseCasePayload> {
-    const task = await this.taskRepository.findById(input.taskId);
+    const task = await this.taskRepository.findById(
+      input.taskContentId,
+      input.studentId
+    );
+
     if (!task) {
       throw new EditTaskTitleUseCaseNotFoundError();
     }
 
-    task.edit(input.title);
+    task.updateTaskStatus(input.taskStatus);
 
-    const savedTask = await this.taskRepository.save(task);
+    const savedTask = await this.taskRepository.update(task);
 
-    return {
-      id: savedTask.id,
-      title: savedTask.title,
-      done: savedTask.isDone,
-    };
+    return savedTask.getTask();
   }
 }

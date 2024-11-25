@@ -1,48 +1,34 @@
-import { z } from "zod";
-import { ulid } from "../../libs/ulid";
+import { TaskContent } from "./task_content";
+import { TaskStatus, TaskStatusList } from "./task_status";
 
 export class Task {
-  readonly #id: string;
-  #title: string;
-  #isDone: boolean;
+  readonly #studentId: string;
+  #taskContent: TaskContent;
+  #taskStatus: TaskStatus;
 
-  private readonly titleSchema = z
-    .string()
-    .min(1, "title must not be empty")
-    .max(100, "title must be less than 100 characters");
-
-  public constructor(
-    props: { title: string } | { id: string; title: string; done: boolean },
-  ) {
-    const fromData = "id" in props;
-    if (fromData) {
-      this.#id = props.id;
-      this.#title = props.title;
-      this.#isDone = props.done;
-    } else {
-      this.#id = ulid();
-      this.#title = this.titleSchema.parse(props.title);
-      this.#isDone = false;
-    }
+  public constructor(props: {
+    studentId: string;
+    taskContent: TaskContent;
+    taskStatus: TaskStatus;
+  }) {
+    this.#studentId = props.studentId;
+    this.#taskContent = props.taskContent;
+    this.#taskStatus = props.taskStatus;
   }
 
-  public get id() {
-    return this.#id;
+  public get studentId() {
+    return this.#studentId;
   }
 
-  public get title() {
-    return this.#title;
+  public getTask() {
+    return {
+      studentId: this.#studentId,
+      taskStatus: this.#taskStatus.getTaskStatus(),
+      taskContent: this.#taskContent.getTask(),
+    };
   }
 
-  public get isDone() {
-    return this.#isDone;
-  }
-
-  public edit(title: string) {
-    this.#title = this.titleSchema.parse(title);
-  }
-
-  public makeAsDone() {
-    this.#isDone = true;
+  public updateTaskStatus(status: (typeof TaskStatusList)[number]) {
+    this.#taskStatus.updateStatus(status);
   }
 }
