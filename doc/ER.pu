@@ -1,23 +1,23 @@
 @startuml db
 
 ' 生徒
-entity "Student" {
+entity "student" {
   * id : string <<PK>>
   --
   + name : string <<NOT NULL>>
-  + mailAddress : string <<UNIQUE, NOT NULL>>
+  + mail_address : string <<UNIQUE, NOT NULL>>
   + student_status_id : integer <<FK>>
 }
 
 ' 生徒の状態
-entity "Student_status" {
+entity "student_status" {
   * id : integer <<PK>>
   --
   + name : string <<UNIQUE, NOT NULL>>
 }
 
 ' チーム
-entity "Team" {
+entity "team" {
   * id : string <<PK>>
   --
   + name : string <<NOT NULL>>
@@ -26,20 +26,20 @@ entity "Team" {
 ' チームの生徒
 ' あえて中間テーブルで設定
 ' https://zenn.dev/praha/articles/65afb28caacd0b
-entity "TeamMember" {
+entity "team_member" {
   * student_id : string <<FK>>
   * team_id : string <<FK>>
 }
 
 ' 課題の状況
-entity "Task" {
+entity "task" {
   * student_id : string <<FK>>
   * task_content_id : string <<FK>>
   * task_status_id : integer <<FK>>
 }
 
 ' 課題
-entity "Task_Content" {
+entity "task_content" {
   * id : string <<PK>>
   --
   + title : string <<NOT NULL>>
@@ -48,30 +48,30 @@ entity "Task_Content" {
 
 
 ' 課題のステータス
-entity "Task_Status" {
+entity "task_status" {
   * id : integer <<PK>>
   --
   + name : string <<UNIQUE, NOT NULL>>
 }
 
 ' 1つの生徒は1つの生徒の状態を持つ
-Student ||--|| Student_Status
+student ||--|| student_status
+
 ' 1つの生徒は0以上の複数のチームを持つ
 ' あえて中間テーブルで設定
 ' https://zenn.dev/praha/articles/65afb28caacd0b
-Student ||--o| TeamMember
+student ||--o| team_member
 
 ' 1つのチームは1以上の複数の生徒を持つ
-Team ||--|{ TeamMember
+team ||--|{ team_member
 
 ' 1つの生徒は0以上の複数の課題を持つ
-Student ||--o{ Task
+student ||--o{ task
 
 ' 1つのタスクは1つのコンテンツを持つ
-Task ||--|| Task_Content
+task ||--|| task_content
 
 ' 1つの課題は1つの課題のステータスを持つ
-Task ||--|| Task_Status
-
+task ||--|| task_status
 
 @enduml

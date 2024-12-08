@@ -28,8 +28,6 @@ package 課題集約 {
     class "課題(Task)" as Task  << (R,red) RootEntity >> {
         Id: TaskId
         StudentId: StudentId
-        TaskContent: TaskContent
-        TaskStatus: TaskStatus
     }
 
     class "コンテンツ" as TaskContent << (E, green) Entity >>  {

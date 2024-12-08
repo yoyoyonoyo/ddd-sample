@@ -4,48 +4,18 @@
 ' ユーザーの要求に対するシステムの振る舞いを定義する図です。
 ' サンプルコードP18
 
-' - 参加者
-'     - 名前とメールアドレスを持つ
-'     - メールアドレスの重複は許容されない
-'     - 在籍ステータスを持つ。取りうる値は「在籍中」「休会中」「退会済」の3つ
-'         - ステータスが「在籍中」ではない場合、どのチームにも所属してはいけない
-' - チーム
-'     - チームには名前がある
-'     - チームの名前はa, b, c, dのような英文字でなければいけない
-'     - チームの名前は重複不可
-'     - チームの人数は2〜4名。人数が変動したときの挙動については[参加者の増減に関する仕様](https://www.notion.so/1-4a8b67f9c79b4571b4f31e57bf8372c7?pvs=21)を参照
-' - 課題
-'     - 全ての参加者は複数の課題（80個ぐらい）を所有（割り当てられて）いる
-'         - 例えば参加者Aが課題を80個、参加者Bが課題を80個所有している
-'     - 課題には、参加者ごとに進捗ステータスがある
-'         - 進捗ステータスは「未着手、取組中、レビュー待ち、完了」いずれかの値を持つ
-'         - 進捗ステータス変更可否の条件は以下の通り
-'             - 「未着手」は、「取組中」にのみ変更できる
-'             - 「取組中」は「レビュー待ち」にのみ変更できる
-'             - 「レビュー待ち」は、「取組中」もしくは「完了」に変更できる
-'             - 「完了」は変更できない
-'         - 進捗ステータスを変更できるのは、課題の所有者だけ（Aさんの課題1の進捗ステータスを変えられるのはAさんだけ。Aさんの課題1の進捗ステータスをBさんが変更するのは不可能）
-
-
 rectangle {
-'     export const task = pgTable("task", {
-'   participantId: varchar("participant_id").references(() => participant.id),
-'   taskContentId: varchar("task_content_id").references(() => taskContent.id),
-'   taskStatusId: integer("task_status_id").references(() => taskStatus.id),
-' });
     object "課題1" as TaskActivity1 {
+        ID: "UUIDT1"
         生徒ID: "UUIDS1"
-        コンテンツID: "UUIDTC1"
-        状態ID: "UUIDTS1"
     }
 
     object "課題1のコンテンツ" as TaskContent1 {
-        コンテンツID: "UUIDTC1"
+        タイトル: "タイトル1"
         コンテンツ: "コンテンツ1"
     }
 
     object "課題1の状態" as TaskStatus1 {
-        状態ID: "UUIDTS1"
         状態: "取り組み中"
     }
 
@@ -53,18 +23,16 @@ rectangle {
     TaskActivity1 *-- TaskStatus1
 
     object "課題2" as TaskActivity2 {
+        ID: "UUIDT2"
         生徒ID: "UUIDS1"
-        コンテンツID: "UUIDTC2"
-        状態ID: "UUIDTS2"
     }
 
     object "課題2のコンテンツ" as TaskContent2 {
-        コンテンツID: "UUIDTC2"
+        タイトル: "タイトル2"
         コンテンツ: "コンテンツ2"
     }
 
     object "課題2の状態" as TaskStatus2 {
-        状態ID: "UUIDTS2"
         状態: "未着手"
     }
 
@@ -82,8 +50,6 @@ object "生徒" as Student1 {
 
 TaskActivity1 --> Student1
 TaskActivity2 --> Student1
-
-
 
 @enduml
 
