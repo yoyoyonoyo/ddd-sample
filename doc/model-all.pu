@@ -1,4 +1,3 @@
-' https://little-hands.hatenablog.com/entry/2019/05/11/genba-ddd-handson
 @startuml プラハチャレンジ進捗管理システム
 
 skinparam packageStyle rectangle
@@ -10,6 +9,18 @@ package 生徒集約 {
         Name: 名前
         MailAddress: メールアドレス
         Status: 在関ステータス
+    }
+}
+
+package チーム集約 {
+    class "チーム(Team)" as Team << (R,red) RootEntity >> {
+        Id: TeamId
+        Name: チーム名
+    }
+
+    class "チームメンバー" as TeamMember << (E, green) Entity >>  {
+        TeamId: TeamId
+        StudentId: StudentId
     }
 }
 
@@ -38,8 +49,15 @@ note bottom of Student
     - ステータスが「在籍中」ではない場合、どのチームにも所属してはいけない
 end note
 
+note left of Team
+    - チームには名前がある
+    - チームの人数は2〜4名
+    - 人数が変動したときの挙動については生徒の増減に関する仕様を参照
+    - チームの名前はa, b, c, dのような英文字でなければいけない
+    - チームの名前は重複不可
+end note
 
-note left of Task
+note top of Task
     - 全ての生徒は複数の課題（80個ぐらい）を所有（割り当てられて）いる
     - 生徒ごとに進捗ステータスがある
     - 進捗ステータスは「未着手、取組中、レビュー待ち、完了」いずれかの値を持つ
@@ -52,8 +70,11 @@ note left of Task
 end note
 
 ' 4. 関連性の定義
-Task "1..80" -right-> "0..n" Student
+Task "1..80" -left-> "0..n" Student
 Task "1" *--- "1" TaskContent
 Task "1" *--- "1" TaskStatus
+Student "0..n" <-left- "1" TeamMember
+Team "0..n" *-down- "1" TeamMember
+
 
 @enduml

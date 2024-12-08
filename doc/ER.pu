@@ -6,11 +6,11 @@ entity "Student" {
   --
   + name : string <<NOT NULL>>
   + mailAddress : string <<UNIQUE, NOT NULL>>
-  + Student_status_id : integer <<FK>>
+  + student_status_id : integer <<FK>>
 }
 
 ' 生徒の状態
-entity "Student_Status" {
+entity "Student_status" {
   * id : integer <<PK>>
   --
   + name : string <<UNIQUE, NOT NULL>>
@@ -27,13 +27,13 @@ entity "Team" {
 ' あえて中間テーブルで設定
 ' https://zenn.dev/praha/articles/65afb28caacd0b
 entity "TeamMember" {
-  * Student_id : string <<FK>>
+  * student_id : string <<FK>>
   * team_id : string <<FK>>
 }
 
 ' 課題の状況
 entity "Task" {
-  * Student_id : string <<FK>>
+  * student_id : string <<FK>>
   * task_content_id : string <<FK>>
   * task_status_id : integer <<FK>>
 }
